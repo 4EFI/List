@@ -47,15 +47,17 @@ int PrintListNodeArr( ListNode arr[], int size )
 {
     if( arr == NULL ) return 0;
 
-    printf( "  i |     element | next | prev |\n" );
-    printf( "----+-------------+------+------+\n" );
+    printf( "              ListDump             \n" );
+    printf( "+-----+-------------+------+------+\n" );
+    printf( "|   i |     element | next | prev |\n" );
+    printf( "+-----+-------------+------+------+\n" );
 
     for( int i = 0; i < size; i++ )
     {
-        printf( "%3d | %11d | %4d | %4d |\n", i, arr[i].elem, arr[i].next, arr[i].prev );    
+        printf( "| %3d | %11d | %4d | %4d |\n", i, arr[i].elem, arr[i].next, arr[i].prev );    
     }
 
-    printf( "----+-------------+------+------+\n" );
+    printf( "+-----+-------------+------+------+\n" );
 
     return 1;  
 }
