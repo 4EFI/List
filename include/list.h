@@ -30,6 +30,7 @@ struct List
     
     int head;
     int tail;
+    int free;
 
     int size;
     ListNode* listNodes;   
@@ -39,9 +40,11 @@ int ListCtor( List* list, int size );
 
 int PrepareListNodeArr ( ListNode arr[], int size, int val );
 int PrintListNodeArr   ( ListNode arr[], int size );
-int GraphVizListNodeArr( ListNode arr[], int size, char* fileType, char* fileName );
 
-int ListDump( List* list, int typeDump = TypeListDump::CONSOLE );
+int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile );
+int GraphVizListInfo   ( List* list, /*         */ FILE* tempFile );
+
+int ListDump( List* list, int typeDump = TypeListDump::CONSOLE, char* fileName = "", char* fileType = "" );
 
 // Get head/tail index
 int ListHead( List* list );
