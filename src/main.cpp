@@ -7,5 +7,5 @@ int main()
     List list = {0};
     ListCtor( &list, 10 );
 
-    ListDump( &list );
+    ListDump( &list, TypeListDump::GRAPH_VIZ );
 }
