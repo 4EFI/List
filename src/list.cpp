@@ -391,5 +391,24 @@ int ListMove( List* list, int pos )
     return 1;
 }
 
+//-----------------------------------------------------------------------------
+
+int ListLogicalPosToPhysical( List* list, int desiredLogicalPos )
+{
+    if( list == NULL ) return 0;
+    
+    int curLogicalPos = list->head;
+
+    for( int i = 1; i <= list->size; i++ )
+    {
+        if( curLogicalPos == desiredLogicalPos ) return i;
+        if( curLogicalPos == list->tail )        return 0;
+        
+        curLogicalPos = list->nodes[curLogicalPos].next; 
+    }
+
+    return 0;
+}
+
 //  End List functions
 //-----------------------------------------------------------------------------

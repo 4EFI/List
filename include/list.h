@@ -65,6 +65,8 @@ int ListInsertAfter ( List* list, int pos, Elem_t val );
 int ListInsertBefore( List* list, int pos, Elem_t val );
 int ListMove        ( List* list, int pos );
 
+int ListLogicalPosToPhysical( List* list, int desiredLogicalPos );
+
 //-----------------------------------------------------------------------------
 
 int CreateGraphVizImg( const char* dotFileName, const char* fileName, const char* fileType );

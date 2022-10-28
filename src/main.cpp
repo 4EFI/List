@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include "list.h"
+#include "LOG.h"
 
 int main()
 {
@@ -18,6 +19,8 @@ int main()
     ListPopBack( &list, 27 );
     //ListPushBack( &list, 25 );
     //ListInsertAfter( &list, 1, 40 );
+
+    LOG( "%d", ListLogicalPosToPhysical( &list, 1 ) );
 
     ListDump( &list, typeListDump ); 
     ListInsertAfter( &list, 2, 50 );
