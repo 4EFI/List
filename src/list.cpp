@@ -240,13 +240,14 @@ int ListDump( List* list, int typeDump, const char* str, ... )
         remove( tempDotFileName );
 
         // Create html file
-         fprintf( FileListDump, "<pre>\n" );
+        /*            */  fprintf( FileListDump, "<pre>" );
 
-         fprintf( FileListDump, "<font size = 4>" );
-        vfprintf( FileListDump, str, arg );
-         fprintf( FileListDump, "</font>\n\n" );
+        /*            */  fprintf( FileListDump, "<font size = 4>" );
+        /*            */ vfprintf( FileListDump, str, arg );
+        /*            */  fprintf( FileListDump, "</font>" );
+        if( str != NULL ) fprintf( FileListDump, "\n\n" );
 
-         fprintf( FileListDump, "<img src = \"%s\", style = \" max-width: 95vw \">\n", graphName );
+         fprintf( FileListDump, "<img src = \"%s\", style = \" max-width: 95vw \">", graphName );
          fprintf( FileListDump, "<hr>" );
     }
 
