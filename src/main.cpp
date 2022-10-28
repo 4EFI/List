@@ -20,8 +20,6 @@ int main()
     //ListPushBack( &list, 25 );
     //ListInsertAfter( &list, 1, 40 );
 
-    LOG( "%d", ListLogicalPosToPhysical( &list, 1 ) );
-
     ListDump( &list, typeListDump ); 
     ListInsertAfter( &list, 2, 50 );
 

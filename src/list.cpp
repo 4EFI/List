@@ -156,12 +156,12 @@ int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile )
     {
         if( arr[i].prev != -1 && arr[i].prev != 0 )
         {
-            fprintf( tempFile, "node%d -> node%d [ style = solid, constraint = false ];", i, arr[i].prev );
+            fprintf( tempFile, "node%d -> node%d [ style = dashed, constraint = false ];", i, arr[i].prev );
         }
 
         if( arr[i].next != -1 && arr[i].next != 0 )
         {
-            fprintf( tempFile, "node%d -> node%d [ style = dashed, constraint = false ];", i, arr[i].next );
+            fprintf( tempFile, "node%d -> node%d [ style = solid, constraint = false ];", i, arr[i].next );
         }
     }
 
@@ -321,7 +321,7 @@ int ListPopBack( List* list, Elem_t val )
     int tempHead = list->head;
 
     list->head = list->free++;
-    //list->free = list->nodes[list->tail].next;
+    //list->free = list->nodes[list->head].next;
 
     list->nodes[tempHead].prev = list->head;
     
@@ -366,8 +366,8 @@ int ListInsertAfter( List* list, int pos, Elem_t val )
 
     if( PushtToEmtyList( list, val ) ) return 1;
 
-    //if( pos == list->nodes[list]          ) list->head = list->free;
-    //if( pos == list->tail ) list->tail = list->free;
+    if( pos == list->nodes[list->head].prev ) return ListPopBack ( list, val );
+    if( pos == list->tail )                   return ListPushBack( list, val );
     
     // Set value
     list->nodes[list->free].elem = val;
@@ -376,7 +376,9 @@ int ListInsertAfter( List* list, int pos, Elem_t val )
     list->nodes[list->free].next = list->nodes[pos].next;
 
     list->nodes[list->nodes[pos].next].prev = list->free;
-    list->nodes[pos                      ].next = list->free;
+    list->nodes[pos                  ].next = list->free;
+
+    list->size++;
 
     list->free++;
     return list->free - 1;
@@ -399,12 +401,33 @@ int ListLogicalPosToPhysical( List* list, int desiredLogicalPos )
     
     int curLogicalPos = list->head;
 
-    for( int i = 1; i <= list->size; i++ )
+    for( int i = 1; ; i++ )
     {
-        if( curLogicalPos == desiredLogicalPos ) return i;
+        if( i             == desiredLogicalPos ) return curLogicalPos;
         if( curLogicalPos == list->tail )        return 0;
         
         curLogicalPos = list->nodes[curLogicalPos].next; 
+    }
+
+    return 0;
+}
+
+
+//-----------------------------------------------------------------------------
+
+int ListFindElemByValue( List* list, Elem_t value )
+{
+    if( list == NULL ) return 0;
+
+    int curLogicalPos = list->head;
+
+    while( true )
+    {
+        if( list->nodes[curLogicalPos].elem == value ) return curLogicalPos;
+        
+        if( curLogicalPos == list->tail ) return 0;
+
+        curLogicalPos = list->nodes[curLogicalPos].next;  
     }
 
     return 0;
