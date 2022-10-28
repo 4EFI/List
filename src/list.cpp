@@ -136,33 +136,32 @@ int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile )
     {
         // Create node 
         fprintf( tempFile, "node%d[ shape = record, style = \"filled\", fillcolor = \"%s\", " 
-                           "label = \"<p%d> prev = %d | <d%d>data[%d] \\n %d | <n%d> next = %d\" ];\n", 
+                           "label = \"<p> prev = %d | <d> data[%d] \\n %d | <n> next = %d\" ];\n", 
                             i, arr[i].prev == -1 ? "lightgreen" : "lightgrey", 
-                            i, arr[i].prev, i, i, arr[i].elem, i, arr[i].next );
+                               arr[i].prev, i, arr[i].elem, arr[i].next );
     }
 
     
     // Connect nodes with invis edges
-    fprintf( tempFile, "edge[ style = invis ]" ); // constraint = true
+    fprintf( tempFile, "edge[ style = invis ]" );
     for( int i = 1; i < size; i++ )
     {
         // Connect nodes empty edges 
-        fprintf( tempFile, "node%d -> node%d;", i - 1, i );
+        fprintf( tempFile, "node%d -> node%d [ style = invis ];", i - 1, i );
     }
 
-
     // Connect prev/next to data 
-    fprintf( tempFile, "edge[ style = solid ]" ); // constraint = false
+    fprintf( tempFile, "graph[ nodesep = 1, splines = ortho ];\n" );
     for( int i = 1; i < size; i++ )
     {
         if( arr[i].prev != -1 && arr[i].prev != 0 )
         {
-            fprintf( tempFile, "node%d:<p%d> -> node%d:<d%d>", i, i, arr[i].prev, arr[i].prev );
+            fprintf( tempFile, "node%d -> node%d [ style = solid ];", i, arr[i].prev );
         }
 
         if( arr[i].next != -1 && arr[i].next != 0 )
         {
-            fprintf( tempFile, "node%d:<n%d> -> node%d:<d%d>", i, i, arr[i].next, arr[i].next );
+            fprintf( tempFile, "node%d -> node%d [ style = dashed ];", i, arr[i].next );
         }
     }
 
@@ -183,7 +182,7 @@ FILE* CreateListDumpDotFile( List* list, const char* fileName )
         fprintf( tempDotFile, "rankdir = LR;\n" );
 
         GraphVizListNodeArr( list->nodes, list->capacity, tempDotFile );
-        GraphVizListInfo   ( list, /*                      */ tempDotFile );
+        GraphVizListInfo   ( list, /*                  */ tempDotFile );
     }
     fprintf( tempDotFile, "}\n" );
 
@@ -316,6 +315,21 @@ int ListPushBack( List* list, Elem_t val )
 int ListPopBack( List* list, Elem_t val )
 {
     if( list == NULL ) return 0;
+    
+    if( PushtToEmtyList( list, val ) ) return 1;
+    
+    int tempHead = list->head;
+
+    list->head = list->free++;
+    //list->free = list->nodes[list->tail].next;
+
+    list->nodes[tempHead].next = list->head;
+    
+    list->nodes[list->head].prev = 0;
+    list->nodes[list->head].elem = val;
+    list->nodes[list->head].next = tempHead;
+
+    list->size++;
     
     return list->head;
 }   
