@@ -1,6 +1,10 @@
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
 #include "list.h" 
 #include "LOG.h" 
 
@@ -106,8 +110,9 @@ int GraphVizListInfo( List* list, FILE* tempFile )
 {
     if( list == NULL || tempFile == NULL ) return 0;
     
-#define DEF_INFO( name, val ) \
-    fprintf( tempFile, name"[shape = \"rectangle\",style = \"rounded\", label = \""name" = %d\"];\n", val );
+#define DEF_INFO( name, val )                                                                          \
+    fprintf( tempFile, name"[ shape = \"rectangle\", style = \"filled\", fillcolor = \"lightyellow\", " \
+                             "label = \"" name" = %d\" ];\n", val );
     
     DEF_INFO( "head", list->head )
     DEF_INFO( "tail", list->tail )
@@ -202,12 +207,16 @@ int CreateGraphVizImg( const char* dotFileName, const char* fileName, const char
 
 //-----------------------------------------------------------------------------
 
-int ListDump( List* list, int typeDump )
+int ListDump( List* list, int typeDump, const char* str, ... )
 {
     if( list == NULL ) return 0;
 
+    va_list   arg = {0};
+    va_start( arg, str );
+
     if/* */( typeDump == TypeListDump::CONSOLE )
     {
+        vfprintf( stdout, str, arg );
         PrintListNodeArr( list->listNodes, list->capacity );
     }
     else if( typeDump == TypeListDump::GRAPH_VIZ )
@@ -229,10 +238,17 @@ int ListDump( List* list, int typeDump )
         remove( tempDotFileName );
 
         // Create html file
-        fprintf( FileListDump, "<img src = \"%s\">\n", graphName );
-        fprintf( FileListDump, "<hr>" );
+         fprintf( FileListDump, "<pre>\n" );
+
+         fprintf( FileListDump, "<font size = 5>" );
+        vfprintf( FileListDump, str, arg );
+         fprintf( FileListDump, "</font>\n\n" );
+
+         fprintf( FileListDump, "<img src = \"%s\", style = \" max-width: 90vw \">\n", graphName );
+         fprintf( FileListDump, "<hr>" );
     }
-    
+
+    va_end( arg );
     return 1;
 }
 

@@ -4,31 +4,27 @@
 
 int main()
 {
-    List list = {0};
+    List      list = {0};
     ListCtor( &list, 10 );
 
-    /*
-    ListInsert( &list, ListTail( &list ), 300 );
-    ListInsert( &list, ListTail( &list ), 500 );
-    ListInsert( &list, ListTail( &list ), 700 );
-    */
+    int typeListDump = TypeListDump::GRAPH_VIZ; 
 
-    ListDump( &list, TypeListDump::GRAPH_VIZ ); 
+    ListDump( &list, typeListDump, "Ded outside: %d", 32 ); 
     ListInsertAfter( &list, 0, 30 );
 
-    ListDump( &list, TypeListDump::GRAPH_VIZ );
+    ListDump( &list, typeListDump );
     ListInsertAfter( &list, 1, 40 );
 
-    ListDump( &list, TypeListDump::GRAPH_VIZ ); 
+    ListDump( &list, typeListDump ); 
     ListInsertAfter( &list, 2, 50 );
 
-    ListDump( &list, TypeListDump::GRAPH_VIZ );
+    ListDump( &list, typeListDump );
     ListInsertAfter( &list, 1, 100 );
-    ListDump( &list, TypeListDump::GRAPH_VIZ );
+    ListDump( &list, typeListDump );
 
     ListInsertAfter( &list, 1, 300 );
 
-    ListDump( &list, TypeListDump::GRAPH_VIZ );
+    ListDump( &list, typeListDump );
 
     ListDtor( &list );
 }

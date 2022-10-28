@@ -52,7 +52,7 @@ int GraphVizListInfo   ( List* list, /*         */ FILE* tempFile );
 
 FILE* CreateListDumpDotFile( List* list, const char* fileName );
 
-int ListDump( List* list, int typeDump = TypeListDump::CONSOLE );
+int ListDump( List* list, int typeDump, const char* str = "", ... );
 
 // Get head/tail index
 int ListHead( List* list );
