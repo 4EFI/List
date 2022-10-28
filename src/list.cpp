@@ -34,12 +34,12 @@ int ListCtor( List* list, int size )
     list->tail = 0;
     list->free = 1;
 
-    list->listNodes = ( ListNode* )calloc( size , sizeof( ListNode ) );
+    list->nodes = ( ListNode* )calloc( size , sizeof( ListNode ) );
 
-    if( list->listNodes != NULL ) list->capacity = size;
+    if( list->nodes != NULL ) list->capacity = size;
     else return -1;
 
-    PrepareListNodeArr( list->listNodes, list->capacity, -1 );
+    PrepareListNodeArr( list->nodes, list->capacity, -1 );
 
     return 1;
 }
@@ -56,8 +56,8 @@ int ListDtor( List* list )
     list->tail = ListPoison;
     list->free = ListPoison;
 
-    free( list->listNodes );
-    list->listNodes = NULL;
+    free( list->nodes );
+    list->nodes = NULL;
 
     list->size = ListPoison;
 
@@ -182,7 +182,7 @@ FILE* CreateListDumpDotFile( List* list, const char* fileName )
     {
         fprintf( tempDotFile, "rankdir = LR;\n" );
 
-        GraphVizListNodeArr( list->listNodes, list->capacity, tempDotFile );
+        GraphVizListNodeArr( list->nodes, list->capacity, tempDotFile );
         GraphVizListInfo   ( list, /*                      */ tempDotFile );
     }
     fprintf( tempDotFile, "}\n" );
@@ -219,7 +219,7 @@ int ListDump( List* list, int typeDump, const char* str, ... )
         /*             */ vfprintf( stdout, str, arg );
         if( str != NULL )  fprintf( stdout, "\n" );
 
-        PrintListNodeArr( list->listNodes, list->capacity );
+        PrintListNodeArr( list->nodes, list->capacity );
     }
     else if( typeDump == TypeListDump::GRAPH_VIZ )
     {
@@ -292,8 +292,23 @@ int ListTail( List* list )
 int ListPushBack( List* list, Elem_t val )
 {
     if( list == NULL ) return 0;
+
+    if( PushtToEmtyList( list, val ) ) return 1;
     
-    return ListInsertAfter( list, ListTail( list ), val );;
+    int tempTail = list->tail;
+
+    list->tail = list->free++;
+    //list->free = list->nodes[list->tail].next;
+
+    list->nodes[tempTail].next = list->tail;
+    
+    list->nodes[list->tail].prev = tempTail;
+    list->nodes[list->tail].elem = val;
+    list->nodes[list->tail].next = 0;
+
+    list->size++;
+
+    return list->tail;
 }
 
 //-----------------------------------------------------------------------------
@@ -302,7 +317,7 @@ int ListPopBack( List* list, Elem_t val )
 {
     if( list == NULL ) return 0;
     
-    return ListInsertAfter( list, ListHead( list ) - 1, val );
+    return list->head;
 }   
 
 //-----------------------------------------------------------------------------
@@ -316,9 +331,9 @@ int PushtToEmtyList( List* list, Elem_t val )
 
     list->head = 1; list-> tail = 1;
 
-    list->listNodes[1].prev = 0;
-    list->listNodes[1].elem = val;
-    list->listNodes[1].next = 0;
+    list->nodes[1].prev = 0;
+    list->nodes[1].elem = val;
+    list->nodes[1].next = 0;
 
     list->size++; 
 
@@ -337,17 +352,17 @@ int ListInsertAfter( List* list, int pos, Elem_t val )
 
     if( PushtToEmtyList( list, val ) ) return 1;
 
-    //if( pos == list->listNodes[list]          ) list->head = list->free;
-    if( pos == list->tail ) list->tail = list->free;
+    //if( pos == list->nodes[list]          ) list->head = list->free;
+    //if( pos == list->tail ) list->tail = list->free;
     
     // Set value
-    list->listNodes[list->free].elem = val;
+    list->nodes[list->free].elem = val;
 
-    list->listNodes[list->free].prev = pos;
-    list->listNodes[list->free].next = list->listNodes[pos].next;
+    list->nodes[list->free].prev = pos;
+    list->nodes[list->free].next = list->nodes[pos].next;
 
-    list->listNodes[list->listNodes[pos].next].prev = list->free;
-    list->listNodes[pos                      ].next = list->free;
+    list->nodes[list->nodes[pos].next].prev = list->free;
+    list->nodes[pos                      ].next = list->free;
 
     list->free++;
     return list->free - 1;

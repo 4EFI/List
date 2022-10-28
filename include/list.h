@@ -36,7 +36,7 @@ struct List
     int free;
 
     int capacity;
-    ListNode* listNodes;   
+    ListNode* nodes;   
 
     int size;
 };

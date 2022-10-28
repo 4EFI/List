@@ -10,10 +10,12 @@ int main()
     int typeListDump = TypeListDump::GRAPH_VIZ; 
 
     ListDump( &list, typeListDump, ">>> Ded outside: %d", 32 ); 
-    ListInsertAfter( &list, 0, 30 );
+    ListPushBack( &list, 15 );
+    //ListInsertAfter( &list, 0, 30 );
 
     ListDump( &list, typeListDump );
-    ListInsertAfter( &list, 1, 40 );
+    ListPushBack( &list, 25 );
+    //ListInsertAfter( &list, 1, 40 );
 
     ListDump( &list, typeListDump ); 
     ListInsertAfter( &list, 2, 50 );
