@@ -89,7 +89,6 @@ int PrintListNodeArr( ListNode arr[], int size )
 {
     if( arr == NULL ) return 0;
 
-    printf( "              ListDump             \n" );
     printf( "+-----+-------------+------+------+\n" );
     printf( "|   i |     element | next | prev |\n" );
     printf( "+-----+-------------+------+------+\n" );
@@ -216,7 +215,10 @@ int ListDump( List* list, int typeDump, const char* str, ... )
 
     if/* */( typeDump == TypeListDump::CONSOLE )
     {
-        vfprintf( stdout, str, arg );
+        /*             */  fprintf( stdout, "%*sListDump%*s\n", 13, "", 13, "" );
+        /*             */ vfprintf( stdout, str, arg );
+        if( str != NULL )  fprintf( stdout, "\n" );
+
         PrintListNodeArr( list->listNodes, list->capacity );
     }
     else if( typeDump == TypeListDump::GRAPH_VIZ )
@@ -240,11 +242,11 @@ int ListDump( List* list, int typeDump, const char* str, ... )
         // Create html file
          fprintf( FileListDump, "<pre>\n" );
 
-         fprintf( FileListDump, "<font size = 5>" );
+         fprintf( FileListDump, "<font size = 4>" );
         vfprintf( FileListDump, str, arg );
          fprintf( FileListDump, "</font>\n\n" );
 
-         fprintf( FileListDump, "<img src = \"%s\", style = \" max-width: 90vw \">\n", graphName );
+         fprintf( FileListDump, "<img src = \"%s\", style = \" max-width: 95vw \">\n", graphName );
          fprintf( FileListDump, "<hr>" );
     }
 

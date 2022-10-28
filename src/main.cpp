@@ -9,7 +9,7 @@ int main()
 
     int typeListDump = TypeListDump::GRAPH_VIZ; 
 
-    ListDump( &list, typeListDump, "Ded outside: %d", 32 ); 
+    ListDump( &list, typeListDump, ">>> Ded outside: %d", 32 ); 
     ListInsertAfter( &list, 0, 30 );
 
     ListDump( &list, typeListDump );
