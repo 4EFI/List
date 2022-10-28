@@ -156,12 +156,12 @@ int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile )
     {
         if( arr[i].prev != -1 && arr[i].prev != 0 )
         {
-            fprintf( tempFile, "node%d -> node%d [ style = solid ];", i, arr[i].prev );
+            fprintf( tempFile, "node%d -> node%d [ style = solid, constraint = false ];", i, arr[i].prev );
         }
 
         if( arr[i].next != -1 && arr[i].next != 0 )
         {
-            fprintf( tempFile, "node%d -> node%d [ style = dashed ];", i, arr[i].next );
+            fprintf( tempFile, "node%d -> node%d [ style = dashed, constraint = false ];", i, arr[i].next );
         }
     }
 
@@ -323,7 +323,7 @@ int ListPopBack( List* list, Elem_t val )
     list->head = list->free++;
     //list->free = list->nodes[list->tail].next;
 
-    list->nodes[tempHead].next = list->head;
+    list->nodes[tempHead].prev = list->head;
     
     list->nodes[list->head].prev = 0;
     list->nodes[list->head].elem = val;
