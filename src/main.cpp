@@ -6,7 +6,7 @@
 int main()
 {
     List      list = {0};
-    ListCtor( &list, 10 );
+    ListCtor( &list, 1 );
 
     int typeListDump = TypeListDump::GRAPH_VIZ; 
 
@@ -14,6 +14,7 @@ int main()
     ListPushBack( &list, 15 );
 
     ListDump( &list, typeListDump );
+    
     ListPushBack( &list, 25 );
 
     ListDump( &list, typeListDump );

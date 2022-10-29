@@ -46,7 +46,7 @@ struct List
 int ListCtor( List* list, int size );
 int ListDtor( List* list );
 
-int PrepareListNodeArr ( ListNode arr[], int size, int val );
+int PrepareListNodeArr ( ListNode arr[], int size );
 int PrintListNodeArr   ( ListNode arr[], int size );
 
 int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile );

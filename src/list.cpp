@@ -27,7 +27,7 @@ int ListCtor( List* list, int size )
 {
     if( list == NULL ) return 0;
 
-    if(size <= 1) size = 2;
+    if(size < 1) size = 1;
 
     list->coeffResize = 2;
     list->size = 0;
@@ -43,7 +43,7 @@ int ListCtor( List* list, int size )
     if( list->nodes != NULL ) list->capacity = size;
     else return -1;
 
-    PrepareListNodeArr( list->nodes, list->capacity, -1 );
+    PrepareListNodeArr( list->nodes, list->capacity );
 
     return 1;
 }
@@ -70,7 +70,7 @@ int ListDtor( List* list )
 
 //-----------------------------------------------------------------------------
 
-int PrepareListNodeArr( ListNode arr['d'+'e'+'d'], int size, int val )
+int PrepareListNodeArr( ListNode arr['d'+'e'+'d'], int size )
 {
     if( arr == NULL ) return 0;
 
@@ -277,10 +277,25 @@ int ListDump( List* list, int typeDump, const char* str, ... )
 int ListResize( List* list )
 {
     if( list == NULL ) return 0;
-    
-    //if( list-> )
 
-    if( list->size == NULL )
+    int numResize = list->capacity;
+
+    if/* */( list->free >= list->capacity )
+    {
+        numResize *= list->coeffResize;
+    }
+    else if( list->size + 1 <= size_t( list->capacity / (2*list->coeffResize) ) )
+    {
+        numResize /= list->coeffResize;
+    }
+
+    if( numResize < 1 ) numResize = 1;
+ 
+    list->nodes = ( ListNode* )realloc( list->nodes, numResize * sizeof( ListNode ) );
+
+    FillListNodeArr( list->nodes, list->capacity, numResize - 1 );
+
+    list->capacity = numResize;
 
     return 1;
 }
@@ -408,7 +423,19 @@ Elem_t ListMove( List* list, int pos )
 
 int ListLinearize( List* list )
 {
+    if( list == NULL ) return 0;
     
+
+
+    for( int i = 0; i < list->capacity; i++ )
+    {
+        
+    }
+
+    free( list->nodes );
+    //list->nodes = 
+
+    return 1;
 }
 
 //-----------------------------------------------------------------------------
