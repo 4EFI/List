@@ -63,7 +63,8 @@ int ListPopBack ( List* list, Elem_t val );
 
 int ListInsertAfter ( List* list, int pos, Elem_t val );
 int ListInsertBefore( List* list, int pos, Elem_t val );
-int ListMove        ( List* list, int pos );
+
+Elem_t ListMove( List* list, int pos );
 
 int ListLogicalPosToPhysical( List* list, int    desiredLogicalPos );
 int ListFindElemByValue     ( List* list, Elem_t value );
