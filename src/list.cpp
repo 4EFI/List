@@ -423,6 +423,8 @@ int ListLinearize( List* list )
 int ListLogicalPosToPhysical( List* list, int desiredLogicalPos )
 {
     if( list == NULL ) return 0;
+
+    if( list->isSorted ) return desiredLogicalPos;
     
     int curPos = ListHead( list );
 
