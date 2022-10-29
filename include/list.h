@@ -12,6 +12,9 @@ static const Elem_t ListPoison = 0x5E32DEAD;
 extern const char* FileListDumpName;
 extern FILE* FileListDump;
 
+#define HEAD list->nodes[0].next
+#define TAIL list->nodes[0].prev
+
 //-----------------------------------------------------------------------------
 
 enum TypeListDump
@@ -67,7 +70,7 @@ Elem_t ListRemove( List* list, int pos );
 int ListLogicalPosToPhysical( List* list, int    desiredLogicalPos );
 int ListFindElemByValue     ( List* list, Elem_t value );
 
-int ListLinearize( List* list, int size );
+int ListLinearize( List* list );
 
 //-----------------------------------------------------------------------------
 

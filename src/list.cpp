@@ -118,13 +118,9 @@ int GraphVizListInfo( List* list, FILE* tempFile )
 {
     if( list == NULL || tempFile == NULL ) return 0;
     
-#define DEF_INFO( name, val )                                                                          \
-    fprintf( tempFile, name"[ shape = \"rectangle\", style = \"filled\", fillcolor = \"lightyellow\", " \
-                             "label = \"" name" = %d\" ];\n", val );
-    
-    DEF_INFO( "head", ListHead( list ) )
-    DEF_INFO( "tail", ListTail( list ) )
-    DEF_INFO( "free", list->free )
+    fprintf( tempFile, "info[ shape = record, style = \"filled\", fillcolor = \"lightyellow\", "
+                       "label = \" head = %d | tail = %d | free = %d | capacity = %d | size = %d | isSorted = %d \" ];\n",  
+                        ListHead( list ), ListTail( list ), list->free, list->capacity, list->size, list->isSorted );
 
 #undef DEF_INFO
 
@@ -138,7 +134,7 @@ int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile )
     if( arr == NULL ) return 0;
     
     // Create null-poison node
-    fprintf( tempFile, "node0[ shape = record, style = \"filled\", fillcolor = \"red\", "
+    fprintf( tempFile, "node0[ shape = record, style = \"filled\", fillcolor = \"#FF7373\", "
                        "label = \"<p> prev = %d | <d> data[0]\\nPOISON | <n> next = %d\" ];\n", 
                         arr[0].prev, arr[0].next );
     
@@ -339,9 +335,7 @@ int ListInsert( List* list, int pos, Elem_t val )
 
     ListResize( list );
 
-    list->isSorted = false;
-
-    if( pos == ListTail( list ) ) list->isSorted = true;
+    if( pos != ListTail( list ) ) list->isSorted = false;
 
     int tempFree = list->free;
     int newFree  = list->nodes[list->free].next;
@@ -389,35 +383,37 @@ Elem_t ListRemove( List* list, int pos )
 
 //-----------------------------------------------------------------------------
 
-int ListLinearize( List* list, int size )
+int ListLinearize( List* list )
 {
     if( list == NULL ) return 0;
 
-    if( size < 1 ) size = 1;
-
-    ListNode* newNodes = ( ListNode* )calloc( size, sizeof( ListNode ) );
-
-    newNodes[0] = list->nodes[0];
+    ListNode* newNodes = ( ListNode* )calloc( list->capacity, sizeof( ListNode ) );
 
     int pos = ListHead( list );
-    int iTemp = 1;
-    for( int i = 1; i < size; i++, iTemp++)
+    int i = 1;
+    for( ; i <= list->size; i++ )
     {  
-        newNodes[i] = list->nodes[pos];
+        newNodes[i].elem = list->nodes[pos].elem;
+        newNodes[i].next = i + 1;
+        newNodes[i].prev = i - 1;
+                 
         pos = list->nodes[pos].next;
-
-        if( pos == ListTail( list ) ) break;
-    }
-
-    for( int i = iTemp; i < list->capacity; i++ )
-    {
-        newNodes[i] = list->nodes[i];
     }
 
     free( list->nodes );
     list->nodes    = newNodes; 
-    FillListNodeArr( list->nodes, list->capacity, size - 1 );
-    list->capacity = size;
+    
+    TAIL = i - 1;
+    HEAD = 1;
+
+    list->nodes[TAIL].next = 0;
+    list->nodes[HEAD].prev = 0;
+
+    list->free = i;
+
+    FillListNodeArr( list->nodes, list->free, list->capacity - 1 );
+
+    list->isSorted = true;
 
     return 1;
 }

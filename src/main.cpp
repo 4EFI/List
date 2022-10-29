@@ -29,8 +29,8 @@ int main()
 
     ListDump( &list, typeListDump );
 
-    //ListLinearize( &list, list.capacity );
-    //ListDump( &list, typeListDump );
+    ListLinearize( &list );
+    ListDump( &list, typeListDump );
 
     ListDtor( &list );
 }
