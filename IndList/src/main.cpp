@@ -10,27 +10,26 @@ int main()
 
     int typeListDump = TypeListDump::GRAPH_VIZ; 
 
-    ListDump( &list, typeListDump, ">>> Ded outside: %d", 32 ); 
     ListPushBack( &list, 15 );
+    ListDump( &list, typeListDump, "PushBack( 15 )" ); 
 
-    ListDump( &list, typeListDump );
     ListPushBack( &list, 25 );
+    ListDump( &list, typeListDump, "PushBack( 25 )" );
 
-    ListDump( &list, typeListDump );
     ListRemove( &list, 1 );
-    ListDump( &list, typeListDump ); 
-    ListInsert( &list, 2, 50 );
+    ListDump( &list, typeListDump, "Remove( 1 )" ); 
 
-    ListDump( &list, typeListDump );
+    ListInsert( &list, 2, 50 );
+    ListDump( &list, typeListDump, "Insert( 2, 50 )" );
+
     ListInsert( &list, 1, 100 );
-    ListDump( &list, typeListDump );
+    ListDump( &list, typeListDump, "Insert( 1, 100 )" );
 
     ListInsert( &list, 1, 300 );
-
-    ListDump( &list, typeListDump );
+    ListDump( &list, typeListDump, "Insert( 1, 300 )" );
 
     ListLinearize( &list );
-    ListDump( &list, typeListDump );
+    ListDump( &list, typeListDump, "ListLinearize()" );
 
     ListDtor( &list );
 }

@@ -63,7 +63,7 @@ int ListDtor( List* list )
 
 //-----------------------------------------------------------------------------
 
-int PrepareListNodeArr( ListNode arr['d'+'e'+'d'], int size )
+int PrepareListNodeArr( ListNode arr['ded'], int size )
 {
     if( arr == NULL ) return 0;
 
@@ -134,7 +134,7 @@ int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile )
     if( arr == NULL ) return 0;
     
     // Create null-poison node
-    fprintf( tempFile, "node0[ shape = record, style = \"filled\", fillcolor = \"#FF7373\", "
+    fprintf( tempFile, "node0[ shape = record, style = \"filled\", fillcolor = \"#FF9090\", "
                        "label = \"<p> prev = %d | <d> data[0]\\nPOISON | <n> next = %d\" ];\n", 
                         arr[0].prev, arr[0].next );
     
@@ -143,7 +143,7 @@ int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile )
         // Create node 
         fprintf( tempFile, "node%d[ shape = record, style = \"filled\", fillcolor = \"%s\", " 
                            "label = \"<p> prev = %d | <d> data[%d] \\n %d | <n> next = %d\" ];\n", 
-                            i, arr[i].prev == -1 ? "lightgreen" : "lightgrey", 
+                            i, arr[i].prev == -1 ? "lightgreen" : "#B0F0F0", 
                                arr[i].prev, i, arr[i].elem, arr[i].next );
     }
 
