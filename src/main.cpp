@@ -20,13 +20,13 @@ int main()
     ListMove( &list, 1 );
 
     ListDump( &list, typeListDump ); 
-    ListInsertAfter( &list, 2, 50 );
+    ListInsert( &list, 2, 50 );
 
     ListDump( &list, typeListDump );
-    ListInsertAfter( &list, 1, 100 );
+    ListInsert( &list, 1, 100 );
     ListDump( &list, typeListDump );
 
-    ListInsertAfter( &list, 1, 300 );
+    ListInsert( &list, 1, 300 );
 
     ListDump( &list, typeListDump );
 
