@@ -30,9 +30,6 @@ struct ListNode
 struct List
 {  
     int coeffResize;
-    
-    int head;
-    int tail;
     int free;
 
     bool isSorted;
@@ -65,12 +62,12 @@ int ListPopBack ( List* list, Elem_t val );
 
 int ListInsert( List* list, int pos, Elem_t val );
 
-Elem_t ListMove( List* list, int pos );
+Elem_t ListRemove( List* list, int pos );
 
 int ListLogicalPosToPhysical( List* list, int    desiredLogicalPos );
 int ListFindElemByValue     ( List* list, Elem_t value );
 
-int ListLinearize( List* list );
+int ListLinearize( List* list, int size );
 
 //-----------------------------------------------------------------------------
 

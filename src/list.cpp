@@ -15,8 +15,7 @@ FILE* FileListDump = fopen( FileListDumpName, "w" );
 
 //-----------------------------------------------------------------------------
 
-int ListResize     ( List* list ); 
-int PushtToEmtyList( List* list, Elem_t val );
+int ListResize( List* list ); 
 
 int FillListNodeArr( ListNode arr[], int iBegin, int iEnd );
 
@@ -31,9 +30,6 @@ int ListCtor( List* list, int size )
 
     list->coeffResize = 2;
     list->size = 0;
-    
-    list->head = 0;
-    list->tail = 0;
     list->free = 1;
 
     list->isSorted = true;
@@ -55,10 +51,7 @@ int ListDtor( List* list )
     if( list == NULL ) return 0;
 
     list->coeffResize = ListPoison;
-    
-    list->head = ListPoison;
-    list->tail = ListPoison;
-    list->free = ListPoison;
+    list->free        = ListPoison;
 
     free( list->nodes );
     list->nodes = NULL;
@@ -74,8 +67,8 @@ int PrepareListNodeArr( ListNode arr['d'+'e'+'d'], int size )
 {
     if( arr == NULL ) return 0;
 
-    0[arr].elem = ListPoison;
     0[arr].prev = 0;
+    0[arr].elem = ListPoison;
     0[arr].next = 0;
     
     FillListNodeArr( arr, 1, size - 1 );
@@ -129,8 +122,8 @@ int GraphVizListInfo( List* list, FILE* tempFile )
     fprintf( tempFile, name"[ shape = \"rectangle\", style = \"filled\", fillcolor = \"lightyellow\", " \
                              "label = \"" name" = %d\" ];\n", val );
     
-    DEF_INFO( "head", list->head )
-    DEF_INFO( "tail", list->tail )
+    DEF_INFO( "head", ListHead( list ) )
+    DEF_INFO( "tail", ListTail( list ) )
     DEF_INFO( "free", list->free )
 
 #undef DEF_INFO
@@ -146,7 +139,8 @@ int GraphVizListNodeArr( ListNode arr[], int size, FILE* tempFile )
     
     // Create null-poison node
     fprintf( tempFile, "node0[ shape = record, style = \"filled\", fillcolor = \"red\", "
-                       "label = \"<p0> prev = 0 | <d0> data[0]\\nPOISON | <n0> next = 0\" ];\n" );
+                       "label = \"<p> prev = %d | <d> data[0]\\nPOISON | <n> next = %d\" ];\n", 
+                        arr[0].prev, arr[0].next );
     
     for( int i = 1; i < size; i++ )
     {
@@ -280,13 +274,14 @@ int ListResize( List* list )
 
     int numResize = list->capacity;
 
-    if/* */( list->free >= list->capacity )
-    {
-        numResize *= list->coeffResize;
-    }
-    else if( list->size + 1 <= size_t( list->capacity / (2*list->coeffResize) ) )
+    if( list->size <= size_t( (list->capacity - 1) / (2*list->coeffResize) ) )
     {
         numResize /= list->coeffResize;
+    }
+
+    if( list->free >= numResize )
+    {
+        numResize *= list->coeffResize;
     }
 
     if( numResize < 1 ) numResize = 1;
@@ -306,7 +301,7 @@ int ListHead( List* list )
 {
     if( list == NULL ) return 0;
 
-    return list->head;
+    return list->nodes[0].next;
 }
 
 //-----------------------------------------------------------------------------
@@ -315,7 +310,7 @@ int ListTail( List* list )
 {
     if( list == NULL ) return 0;
 
-    return list->tail;
+    return list->nodes[0].prev;
 }
 
 //-----------------------------------------------------------------------------
@@ -337,27 +332,6 @@ int ListPopBack( List* list, Elem_t val )
 }
 
 //-----------------------------------------------------------------------------
-// Local function 
-
-int PushtToEmtyList( List* list, Elem_t val )
-{
-    if( list == NULL ) return 0;
-
-    if( list->head && list->tail ) return 0;
-
-    list->head = 1; list-> tail = 1;
-
-    list->nodes[1].prev = 0;
-    list->nodes[1].elem = val;
-    list->nodes[1].next = 0;
-
-    list->size++; 
-
-    list->free++;
-    return 1;
-}
-
-//-----------------------------------------------------------------------------
 
 int ListInsert( List* list, int pos, Elem_t val )
 {
@@ -365,12 +339,9 @@ int ListInsert( List* list, int pos, Elem_t val )
 
     ListResize( list );
 
-    if( PushtToEmtyList( list, val ) ) return 1;
-
     list->isSorted = false;
 
-    if( pos == list->nodes[list->head].prev ) list->head = list->free, list->isSorted = true;
-    if( pos == list->tail )                   list->tail = list->free;
+    if( pos == ListTail( list ) ) list->isSorted = true;
 
     int tempFree = list->free;
     int newFree  = list->nodes[list->free].next;
@@ -392,12 +363,9 @@ int ListInsert( List* list, int pos, Elem_t val )
 
 //-----------------------------------------------------------------------------
 
-Elem_t ListMove( List* list, int pos )
+Elem_t ListRemove( List* list, int pos )
 {
     if( list == NULL ) return 0;
-
-    if( pos == list->head ) list->head = list->nodes[list->head].next;
-    if( pos == list->tail ) list->tail = list->nodes[list->tail].prev;
 
     size_t prevTemp = list->nodes[pos].prev;
     size_t nextTemp = list->nodes[pos].next;
@@ -414,26 +382,42 @@ Elem_t ListMove( List* list, int pos )
     list->free = pos;
     list->size--;
 
-    //list->isSorted = false;
+    list->isSorted = false;
 
     return elem;
 }
 
 //-----------------------------------------------------------------------------
 
-int ListLinearize( List* list )
+int ListLinearize( List* list, int size )
 {
     if( list == NULL ) return 0;
-    
 
+    if( size < 1 ) size = 1;
 
-    for( int i = 0; i < list->capacity; i++ )
+    ListNode* newNodes = ( ListNode* )calloc( size, sizeof( ListNode ) );
+
+    newNodes[0] = list->nodes[0];
+
+    int pos = ListHead( list );
+    int iTemp = 1;
+    for( int i = 1; i < size; i++, iTemp++)
+    {  
+        newNodes[i] = list->nodes[pos];
+        pos = list->nodes[pos].next;
+
+        if( pos == ListTail( list ) ) break;
+    }
+
+    for( int i = iTemp; i < list->capacity; i++ )
     {
-        
+        newNodes[i] = list->nodes[i];
     }
 
     free( list->nodes );
-    //list->nodes = 
+    list->nodes    = newNodes; 
+    FillListNodeArr( list->nodes, list->capacity, size - 1 );
+    list->capacity = size;
 
     return 1;
 }
@@ -444,12 +428,12 @@ int ListLogicalPosToPhysical( List* list, int desiredLogicalPos )
 {
     if( list == NULL ) return 0;
     
-    int curPos = list->head;
+    int curPos = ListHead( list );
 
     for( int i = 1; ; i++ )
     {
         if( i      == desiredLogicalPos ) return curPos;
-        if( curPos == list->tail )        return 0;
+        if( curPos == ListTail( list )  ) return 0;
         
         curPos = list->nodes[curPos].next; 
     }
@@ -463,13 +447,13 @@ int ListFindElemByValue( List* list, Elem_t value )
 {
     if( list == NULL ) return 0;
 
-    int curPos = list->head;
+    int curPos = ListHead( list );
 
     while( true )
     {
         if( list->nodes[curPos].elem == value ) return curPos;
         
-        if( curPos == list->tail ) return 0;
+        if( curPos == ListTail( list ) ) return 0;
 
         curPos = list->nodes[curPos].next;  
     }

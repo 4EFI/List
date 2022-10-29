@@ -6,7 +6,7 @@
 int main()
 {
     List      list = {0};
-    ListCtor( &list, 1 );
+    ListCtor( &list, 5 );
 
     int typeListDump = TypeListDump::GRAPH_VIZ; 
 
@@ -14,12 +14,10 @@ int main()
     ListPushBack( &list, 15 );
 
     ListDump( &list, typeListDump );
-    
     ListPushBack( &list, 25 );
 
     ListDump( &list, typeListDump );
-    ListMove( &list, 1 );
-
+    ListRemove( &list, 1 );
     ListDump( &list, typeListDump ); 
     ListInsert( &list, 2, 50 );
 
@@ -30,6 +28,9 @@ int main()
     ListInsert( &list, 1, 300 );
 
     ListDump( &list, typeListDump );
+
+    //ListLinearize( &list, list.capacity );
+    //ListDump( &list, typeListDump );
 
     ListDtor( &list );
 }
