@@ -31,5 +31,11 @@ int main()
     ListLinearize( &list );
     ListDump( &list, typeListDump, "ListLinearize()" );
 
+    ListPopBack( &list, 1000 );
+    ListDump( &list, typeListDump, "ListPopBack( 1000 )" );
+
+    ListLinearize( &list );
+    ListDump( &list, typeListDump, "ListLinearize()" );
+
     ListDtor( &list );
 }
