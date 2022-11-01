@@ -38,6 +38,9 @@ FILE* CreateListDumpDotFile( List* list, const char* fileName );
 
 int ListDump( List* list, const char* str = NULL, ... );
 
+ListNode* ListHead( List* list );
+ListNode* ListTail( List* list );
+
 ListNode* ListPushBack( List* list, Elem_t val );
 ListNode* ListPopBack ( List* list, Elem_t val );
 
@@ -45,8 +48,10 @@ ListNode* ListInsert( List* list, ListNode* pos, Elem_t val );
 
 int ListRemove( List* list, ListNode* pos );
 
-int ListLogicalPosToPhysical( List* list, int    desiredLogicalPos );
-int ListFindElemByValue     ( List* list, Elem_t value );
+int       ListGetLogicalPosByPtr( List* list, ListNode* pos );
+ListNode* ListGetPtrByLogicalPos( List* list, int       pos );
+
+ListNode* ListFindElemByValue   ( List* list, Elem_t value );
 
 //-----------------------------------------------------------------------------
 

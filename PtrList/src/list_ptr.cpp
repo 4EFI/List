@@ -53,7 +53,7 @@ int GraphVizListInfo( List* list, FILE* tempFile )
     
     fprintf( tempFile, "info[ shape = record, style = \"filled\", fillcolor = \"lightyellow\", "
                        "label = \" head = %p | tail = %p | size = %d \" ];\n",  
-                        HEAD, TAIL, list->size );
+                        ListHead( list ), ListTail( list ), list->size );
 
     return 1;
 }
@@ -65,17 +65,18 @@ int GraphVizList( List* list, FILE* tempFile )
     if( list == NULL || tempFile == NULL ) return 0;
     
     // Create null-poison node
-    fprintf( tempFile, "node0[ shape = record, style = \"filled\", fillcolor = \"#FF7373\", "
+    fprintf( tempFile, "node%p[ shape = record, style = \"filled\", fillcolor = \"#FF7373\", "
                        "label = \"<p> prev = %p | <d> %p[0]\\nPOISON | <n> next = %p\" ];\n", 
+                        &list->poisonNode,
                         list->poisonNode.prev, &list->poisonNode, list->poisonNode.next );
     
-    ListNode* curNode = HEAD;
-    
+
+    ListNode* curNode = ListHead( list );
     for( int i = 1; i <= list->size; i++ )
     {   
-        fprintf( tempFile, "node%d[ shape = record, style = \"filled\", fillcolor = \"#B0F0F\", " 
+        fprintf( tempFile, "node%p[ shape = record, style = \"filled\", fillcolor = \"#B0F0F\", " 
                            "label = \"<p> prev = %p | <d> %p[%d] \\n %d | <n> next = %p\" ];\n", 
-                            i, curNode->prev, curNode, i, curNode->elem, curNode->next );                             
+                            curNode, curNode->prev, curNode, i, curNode->elem, curNode->next );                             
 
         curNode = curNode->next;
     }
@@ -83,27 +84,26 @@ int GraphVizList( List* list, FILE* tempFile )
     
     // Connect nodes with invis edges
     fprintf( tempFile, "edge[ style = invis ]" );
-    for( int i = 1; i <= list->size; i++)
+    curNode = ListHead( list );
+    for(int i = 1; i <= list->size; i++ )
     {
         // Connect nodes empty edges 
-        fprintf( tempFile, "node%d -> node%d [ style = invis ];", i - 1, i );
+        fprintf( tempFile, "node%p -> node%p [ style = invis ];", curNode->prev, curNode );
+
+        curNode = curNode->next;
     }
 
-    /*
+    
     // Connect prev/next to data 
     fprintf( tempFile, "graph[ nodesep = 1, splines = ortho ];\n" );
-    for( int i = 1; i < list->size; i++ )
+    curNode = ListHead( list );
+    for( int i = 1; i <= list->size; i++ )
     {        
-        if( arr[i].prev != 0 )
-        {
-            fprintf( tempFile, "node%d -> node%d [ style = dashed, constraint = false ];", i, arr[i].prev );
-        }
-        if( arr[i].next != 0 )
-        {
-            fprintf( tempFile, "node%d -> node%d [ style = solid,  constraint = false ];", i, arr[i].next );
-        }
+        fprintf( tempFile, "node%p -> node%p [ style = dashed, constraint = false ];", curNode, curNode->prev );
+        fprintf( tempFile, "node%p -> node%p [ style = solid,  constraint = false ];", curNode, curNode->next );
+
+        curNode = curNode->next;
     }
-    */
 
     return 1;
 }
@@ -185,11 +185,25 @@ int ListDump( List* list, const char* str, ... )
 
 //-----------------------------------------------------------------------------
 
+ListNode* ListHead( List* list )
+{
+    return HEAD;
+}
+
+//-----------------------------------------------------------------------------
+
+ListNode* ListTail( List* list )
+{
+    return TAIL;
+}
+
+//-----------------------------------------------------------------------------
+
 ListNode* ListPushBack( List* list, Elem_t val )
 {
     if( list == NULL ) return 0;
 
-    return ListInsert( list, TAIL, val );
+    return ListInsert( list, ListTail( list ), val );
 }
 
 //-----------------------------------------------------------------------------
@@ -198,7 +212,7 @@ ListNode* ListPopBack( List* list, Elem_t val )
 {
     if( list == NULL ) return 0;
 
-    return ListInsert( list, HEAD->prev, val );
+    return ListInsert( list, ListHead( list )->prev, val );
 }
 
 //-----------------------------------------------------------------------------
@@ -246,45 +260,56 @@ int ListRemove( List* list, ListNode* node )
 
 //-----------------------------------------------------------------------------
 
-int ListLogicalPosToPhysical( List* list, int desiredLogicalPos )
+int ListGetLogicalPosByPtr( List* list, ListNode* pos )
 {
     if( list == NULL ) return 0;
 
-    /*
-    if( list->isSorted ) return desiredLogicalPos;
+    ListNode* curPos = ListHead( list );
     
-    int curPos = ListHead( list );
-
-    for( int i = 1; ; i++ )
+    for( int i = 1; i <= list->size; i++ )
     {
-        if( i      == desiredLogicalPos ) return curPos;
-        if( curPos == ListTail( list )  ) return 0;
-        
-        curPos = list->nodes[curPos].next; 
+        if( curPos == pos ) return i;
+
+        curPos = curPos->next;
     }
-    */
 
     return 0;
 }
 
 //-----------------------------------------------------------------------------
 
-int ListFindElemByValue( List* list, Elem_t value )
+ListNode* ListGetPtrByLogicalPos( List* list, int pos )
 {
     if( list == NULL ) return 0;
 
-    /*
-    int curPos = ListHead( list );
+    ListNode* curPos = ListHead( list );
+
+    for( int i = 1; i <= list->size; i++ )
+    {
+        if( i == pos ) return curPos;
+        
+        curPos = curPos->next;
+    }
+
+    return NULL;
+}
+
+//-----------------------------------------------------------------------------
+
+ListNode* ListFindElemByValue( List* list, Elem_t value )
+{
+    if( list == NULL ) return 0;
+
+    ListNode* curPos = ListHead( list );
 
     while( true )
     {
-        if( list->nodes[curPos].elem == value ) return curPos;
+        if( curPos->elem == value ) return curPos;
         
         if( curPos == ListTail( list ) ) return 0;
 
-        curPos = list->nodes[curPos].next;  
+        curPos = curPos->next;  
     }
-    */
 
     return 0;
 }
