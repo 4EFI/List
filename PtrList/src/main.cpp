@@ -8,19 +8,17 @@ int main()
     List      list = {0};
     ListCtor( &list );
 
-    int typeListDump = TypeListDump::GRAPH_VIZ; 
-
     ListNode* node1 = ListPushBack( &list, 15 );
-    ListDump( &list, typeListDump, "PushBack( 15 )" ); 
+    ListDump( &list, "PushBack( 15 )" ); 
 
     ListNode* node2 = ListPushBack( &list, 25 );
-    ListDump( &list, typeListDump, "PushBack( 25 )" ); 
+    ListDump( &list, "PushBack( 25 )" ); 
 
-    ListRemove( &list, node );
-    ListDump( &list, typeListDump, "ListRemove( %p )", node );
+    ListRemove( &list, node2 );
+    ListDump( &list, "ListRemove( %p )", node2 );
 
     ListNode* node3 = ListPushBack( &list, 50 );
-    ListDump( &list, typeListDump, "PushBack( 50 )" );
+    ListDump( &list, "PushBack( 50 )" );
 
     ListDtor( &list );
 }

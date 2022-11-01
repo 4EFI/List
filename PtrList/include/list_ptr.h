@@ -12,9 +12,6 @@ static const Elem_t ListPoison = 0x5E32DEAD;
 extern const char* FileListDumpName;
 extern FILE* FileListDump;
 
-#define HEAD list->poisonNode.next
-#define TAIL list->poisonNode.prev
-
 //-----------------------------------------------------------------------------
 
 struct ListNode
@@ -34,8 +31,8 @@ struct List
 int ListCtor( List* list );
 int ListDtor( List* list );
 
-int GraphVizListNodeArr( List* list, FILE* tempFile );
-int GraphVizListInfo   ( List* list, FILE* tempFile );
+int GraphVizList    ( List* list, FILE* tempFile );
+int GraphVizListInfo( List* list, FILE* tempFile );
 
 FILE* CreateListDumpDotFile( List* list, const char* fileName );
 

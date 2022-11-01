@@ -13,24 +13,23 @@
 const char* FileListDumpName = "list_dump.html";
 FILE* FileListDump = fopen( FileListDumpName, "w" );
 
+#define HEAD list->poisonNode.next
+#define TAIL list->poisonNode.prev
+
 //-----------------------------------------------------------------------------
 
 //  List functions
 //-----------------------------------------------------------------------------
 
-int ListCtor( List* list, int size )
+int ListCtor( List* list )
 {
     if( list == NULL ) return 0;
 
     list->size = 0;
 
-    list->poisonNode = ( ListNode* )calloc( 1 , sizeof( ListNode ) );
-    poisonNode->prev = NULL;
-    poisonNode->elem = ListPoison;
-    poisonNode->next = NULL;
-
-    list->head = NULL;
-    lise->tail = NULL;
+    HEAD = &list->poisonNode;
+    list->poisonNode.elem = ListPoison;
+    TAIL = &list->poisonNode;
 
     return 1;
 }
@@ -53,49 +52,48 @@ int GraphVizListInfo( List* list, FILE* tempFile )
     if( list == NULL || tempFile == NULL ) return 0;
     
     fprintf( tempFile, "info[ shape = record, style = \"filled\", fillcolor = \"lightyellow\", "
-                       "label = \" head = %d | tail = %d | size = %d \" ];\n",  
-                        list->head, list->tail, list->size );
+                       "label = \" head = %p | tail = %p | size = %d \" ];\n",  
+                        HEAD, TAIL, list->size );
 
     return 1;
 }
 
 //-----------------------------------------------------------------------------
 
-int GraphVizListNodeArr( List* list, FILE* tempFile )
+int GraphVizList( List* list, FILE* tempFile )
 {
-    if( arr == NULL ) return 0;
+    if( list == NULL || tempFile == NULL ) return 0;
     
     // Create null-poison node
     fprintf( tempFile, "node0[ shape = record, style = \"filled\", fillcolor = \"#FF7373\", "
-                       "label = \"<p> prev = %p | <d> data[0]\\nPOISON | <n> next = %p\" ];\n", 
-                        list.poisonNode.prev, list.poisonNode.next );
+                       "label = \"<p> prev = %p | <d> %p[0]\\nPOISON | <n> next = %p\" ];\n", 
+                        list->poisonNode.prev, &list->poisonNode, list->poisonNode.next );
     
-    int pos = list->head;
-    for( int i = 0; i < list->size; i++ )
-    {
-        fprintf( tempFile, "node%d[ shape = record, style = \"filled\", fillcolor = \"%s\", " 
-                           "label = \"<p> prev = %d | <d> data[%d] \\n %d | <n> next = %d\" ];\n", 
-                            i, pos.prev == -1 ? "lightgreen" : "lightgrey", 
-                               arr[i].prev, i, arr[i].elem, arr[i].next );
+    ListNode* curNode = HEAD;
+    
+    for( int i = 1; i <= list->size; i++ )
+    {   
+        fprintf( tempFile, "node%d[ shape = record, style = \"filled\", fillcolor = \"#B0F0F\", " 
+                           "label = \"<p> prev = %p | <d> %p[%d] \\n %d | <n> next = %p\" ];\n", 
+                            i, curNode->prev, curNode, i, curNode->elem, curNode->next );                             
 
-        pos = pos.next;
+        curNode = curNode->next;
     }
 
     
     // Connect nodes with invis edges
     fprintf( tempFile, "edge[ style = invis ]" );
-    for( int i = 1; i < size; i++ )
+    for( int i = 1; i <= list->size; i++)
     {
         // Connect nodes empty edges 
         fprintf( tempFile, "node%d -> node%d [ style = invis ];", i - 1, i );
     }
 
+    /*
     // Connect prev/next to data 
     fprintf( tempFile, "graph[ nodesep = 1, splines = ortho ];\n" );
-    for( int i = 1; i < size; i++ )
-    {
-        if( arr[i].prev == -1 || arr[i].next == -1 ) continue;
-        
+    for( int i = 1; i < list->size; i++ )
+    {        
         if( arr[i].prev != 0 )
         {
             fprintf( tempFile, "node%d -> node%d [ style = dashed, constraint = false ];", i, arr[i].prev );
@@ -105,6 +103,7 @@ int GraphVizListNodeArr( List* list, FILE* tempFile )
             fprintf( tempFile, "node%d -> node%d [ style = solid,  constraint = false ];", i, arr[i].next );
         }
     }
+    */
 
     return 1;
 }
@@ -122,7 +121,7 @@ FILE* CreateListDumpDotFile( List* list, const char* fileName )
     {
         fprintf( tempDotFile, "rankdir = LR;\n" );
 
-        GraphVizListNodeArr( list, tempDotFile );
+        GraphVizList( list, tempDotFile );
         GraphVizListInfo   ( list, tempDotFile );
     }
     fprintf( tempDotFile, "}\n" );
@@ -146,50 +145,39 @@ int CreateGraphVizImg( const char* dotFileName, const char* fileName, const char
 
 //-----------------------------------------------------------------------------
 
-int ListDump( List* list, int typeDump, const char* str, ... )
+int ListDump( List* list, const char* str, ... )
 {
     if( list == NULL ) return 0;
 
     va_list   arg = {0};
     va_start( arg, str );
 
-    if/* */( typeDump == TypeListDump::CONSOLE )
-    {
-        /*             */  fprintf( stdout, "%*sListDump%*s\n", 13, "", 13, "" );
-        /*             */ vfprintf( stdout, str, arg );
-        if( str != NULL )  fprintf( stdout, "\n" );
-
-        PrintListNodeArr( list->nodes, list->capacity );
-    }
-    else if( typeDump == TypeListDump::GRAPH_VIZ )
-    {
-        // Create dot file
-        const char tempDotFileName[] = "graphVizTemp.dot";
-        FILE*      tempDotFile = CreateListDumpDotFile( list, tempDotFileName );  
-        fclose(    tempDotFile    );
+    // Create dot file
+    const char tempDotFileName[] = "graphVizTemp.dot";
+    FILE*      tempDotFile = CreateListDumpDotFile( list, tempDotFileName );  
+    fclose(    tempDotFile    );
 
 
-        static int graphNum = 0;
-        char       graphName[MaxStrLen] = "";
-        sprintf(   graphName, "img/graph%d.png", graphNum++ );
+    static int graphNum = 0;
+    char       graphName[MaxStrLen] = "";
+    sprintf(   graphName, "img/graph%d.png", graphNum++ );
 
-        CreateGraphVizImg( tempDotFileName, graphName, "png" );
+    CreateGraphVizImg( tempDotFileName, graphName, "png" );
 
 
-        // Delete temp file
-        remove( tempDotFileName );
+    // Delete temp file
+    remove( tempDotFileName );
 
-        // Create html file
-        /*            */  fprintf( FileListDump, "<pre>" );
+    // Create html file
+    /*            */  fprintf( FileListDump, "<pre>" );
 
-        /*            */  fprintf( FileListDump, "<font size = 4>" );
-        /*            */ vfprintf( FileListDump, str, arg );
-        /*            */  fprintf( FileListDump, "</font>" );
-        if( str != NULL ) fprintf( FileListDump, "\n\n" );
+    /*            */  fprintf( FileListDump, "<font size = 4>" );
+    /*            */ vfprintf( FileListDump, str, arg );
+    /*            */  fprintf( FileListDump, "</font>" );
+    if( str != NULL ) fprintf( FileListDump, "\n\n" );
 
-         fprintf( FileListDump, "<img src = \"%s\", style = \" max-width: 95vw \">", graphName );
-         fprintf( FileListDump, "<hr>" );
-    }
+        fprintf( FileListDump, "<img src = \"%s\", style = \" max-width: 95vw \">", graphName );
+        fprintf( FileListDump, "<hr>" );
 
     va_end( arg );
     return 1;
@@ -197,7 +185,7 @@ int ListDump( List* list, int typeDump, const char* str, ... )
 
 //-----------------------------------------------------------------------------
 
-int ListPushBack( List* list, Elem_t val )
+ListNode* ListPushBack( List* list, Elem_t val )
 {
     if( list == NULL ) return 0;
 
@@ -206,11 +194,11 @@ int ListPushBack( List* list, Elem_t val )
 
 //-----------------------------------------------------------------------------
 
-ListNode* ListPopBack( List*  list, Elem_t val )
+ListNode* ListPopBack( List* list, Elem_t val )
 {
     if( list == NULL ) return 0;
 
-    return ListInsert( list, HEAD.prev, val );
+    return ListInsert( list, HEAD->prev, val );
 }
 
 //-----------------------------------------------------------------------------
@@ -220,9 +208,9 @@ ListInsert( List*     list,  //!< This is a list
             ListNode* pos,   //!< This is a pos
             Elem_t    val )  //!< This is a CRINGE
 {
-    if( list == NULL || pos == NULL || val == NULL ) return 0;
+    if( list == NULL ) return 0;
 
-    ListNode* tempNode = ( ListNode* list )calloc( 1, sizeof( ListNode ) );
+    ListNode* tempNode = ( ListNode* )calloc( 1, sizeof( ListNode ) );
 
     // Set value
     tempNode->elem = val;
@@ -240,63 +228,18 @@ ListInsert( List*     list,  //!< This is a list
 
 //-----------------------------------------------------------------------------
 
-int ListRemove( List* list, int pos )
+int ListRemove( List* list, ListNode* node )
 {
     if( list == NULL ) return 0;
 
-    size_t prevTemp = list->nodes[pos].prev;
-    size_t nextTemp = list->nodes[pos].next;
+    ListNode* prevNode = node->prev;
+    ListNode* nextNode = node->next;
 
-    Elem_t elem = list->nodes[pos].elem;
+    prevNode->next = nextNode;
+    nextNode->prev = prevNode;
 
-    list->nodes[prevTemp].next = nextTemp;
-    list->nodes[nextTemp].prev = prevTemp;
-
-    list->nodes[pos].prev = -1;
-    list->nodes[pos].elem = 0;
-    list->nodes[pos].next = list->free;
-
-    list->free = pos;
+    free( node );
     list->size--;
-
-    list->isSorted = false;
-
-    return 1;
-}
-
-//-----------------------------------------------------------------------------
-
-int ListLinearize( List* list )
-{
-    if( list == NULL ) return 0;
-
-    ListNode* newNodes = ( ListNode* )calloc( list->capacity, sizeof( ListNode ) );
-
-    int pos = ListHead( list );
-    int i = 1;
-    for( ; i <= list->size; i++ )
-    {  
-        newNodes[i].elem = list->nodes[pos].elem;
-        newNodes[i].next = i + 1;
-        newNodes[i].prev = i - 1;
-                 
-        pos = list->nodes[pos].next;
-    }
-
-    free( list->nodes );
-    list->nodes    = newNodes; 
-    
-    TAIL = i - 1;
-    HEAD = 1;
-
-    list->nodes[TAIL].next = 0;
-    list->nodes[HEAD].prev = 0;
-
-    list->free = i;
-
-    FillListNodeArr( list->nodes, list->free, list->capacity - 1 );
-
-    list->isSorted = true;
 
     return 1;
 }
@@ -307,6 +250,7 @@ int ListLogicalPosToPhysical( List* list, int desiredLogicalPos )
 {
     if( list == NULL ) return 0;
 
+    /*
     if( list->isSorted ) return desiredLogicalPos;
     
     int curPos = ListHead( list );
@@ -318,6 +262,7 @@ int ListLogicalPosToPhysical( List* list, int desiredLogicalPos )
         
         curPos = list->nodes[curPos].next; 
     }
+    */
 
     return 0;
 }
@@ -328,6 +273,7 @@ int ListFindElemByValue( List* list, Elem_t value )
 {
     if( list == NULL ) return 0;
 
+    /*
     int curPos = ListHead( list );
 
     while( true )
@@ -338,6 +284,7 @@ int ListFindElemByValue( List* list, Elem_t value )
 
         curPos = list->nodes[curPos].next;  
     }
+    */
 
     return 0;
 }
