@@ -74,7 +74,7 @@ int GraphVizList( List* list, FILE* tempFile )
     ListNode* curNode = ListHead( list );
     for( int i = 1; i <= list->size; i++ )
     {   
-        fprintf( tempFile, "node%p[ shape = record, style = \"filled\", fillcolor = \"#B0F0F\", " 
+        fprintf( tempFile, "node%p[ shape = record, style = \"filled\", fillcolor = \"#B0F0F0\", " 
                            "label = \"<p> prev = %p | <d> %p[%d] \\n %d | <n> next = %p\" ];\n", 
                             curNode, curNode->prev, curNode, i, curNode->elem, curNode->next );                             
 
